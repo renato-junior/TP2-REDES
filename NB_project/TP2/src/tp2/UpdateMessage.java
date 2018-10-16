@@ -9,7 +9,7 @@ import org.json.JSONObject;
  *
  * @author renatojuniortmp
  */
-class UpdateMessage {
+public class UpdateMessage {
 
     private final String source;
     private final String destination;

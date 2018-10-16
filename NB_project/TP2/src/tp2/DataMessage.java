@@ -8,7 +8,7 @@ import org.json.JSONObject;
  *
  * @author renatojuniortmp
  */
-class DataMessage {
+public class DataMessage {
 
     private final String source;
     private final String destination;

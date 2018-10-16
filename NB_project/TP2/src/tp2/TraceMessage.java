@@ -10,7 +10,7 @@ import org.json.JSONObject;
  *
  * @author renatojuniortmp
  */
-class TraceMessage {
+public class TraceMessage {
 
     private final String source;
     private final String destination;
