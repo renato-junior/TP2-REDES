@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package tp2;
-
+import java.util.ArrayList;
 /**
  *
  * @author renatojuniortmp
@@ -13,9 +13,9 @@ public class RoutingTableEntry {
     
     private String ipDestination;
     private int distance;
-    private String nextHop;
+    final private ArrayList<String> nextHop = new ArrayList<String>();
     
-        public String getIpDestination() {
+    public String getIpDestination() {
         return ipDestination;
     }
 
@@ -31,12 +31,12 @@ public class RoutingTableEntry {
         this.distance = distance;
     }
 
-    public String getNextHop() {
+    public ArrayList<String> getNextHop() {
         return nextHop;
     }
 
-    public void setNextHop(String nextHop) {
-        this.nextHop = nextHop;
+    public void addNextHop(String nextHop) {
+        this.nextHop.add(nextHop);
     }
     
 }
