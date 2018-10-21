@@ -1,17 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tp2;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.net.DatagramPacket;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,7 +24,7 @@ public class RouterRIP {
 
     private static final int PORTA_ROTEADOR = 55151;
 
-    private Map<String, RoutingTableEntry> knownRoutes;
+    private List<RoutingTableEntry> knownRoutes;
 
     public RouterRIP(String ip, int period) {
         this.ip = ip;
@@ -36,7 +35,7 @@ public class RouterRIP {
             System.out.println("Erro ao criar o socket! " + ex.getLocalizedMessage());
             System.exit(0);
         }
-        this.knownRoutes = new HashMap<>();
+        this.knownRoutes = new ArrayList<>();
     }
 
     void sendDataMessage(DataMessage m, String ipToSend, String port) {
@@ -46,36 +45,26 @@ public class RouterRIP {
             p.setPort(Integer.parseInt(port));
             socket.send(p);
 
-        } catch (UnknownHostException | SocketException ex) {
-            System.out.println("Erro ao criar o socket! " + ex.getLocalizedMessage());
-            System.exit(0);
-        } catch (Exception e2) {
+        } catch (IOException ex ) {
+            System.out.println("Erro ao enviar o pacote! " + ex.getLocalizedMessage());
             System.out.println("É so isso.. não tem mais jeito... acabou!");
+            System.exit(0);
         }
     }
 
+    /**
+     * Adiciona uma nova entrada na tabela de roteamento.
+     * @param ipDest o ip do destino.
+     * @param ipToSend o ip do next hop.
+     * @param dist o peso do enlace;
+     */
     void addNewRoute(String ipDest, String ipToSend, int dist) {
-        if (this.knownRoutes.containsKey(ipDest)) {
-            if (this.knownRoutes.get(ipDest).getDistance() > dist) {
-                RoutingTableEntry newRoute = new RoutingTableEntry();
-                newRoute.setDistance(dist);
-                newRoute.setIpDestination(ipDest);
-                newRoute.addNextHop(ipDest);
-                this.knownRoutes.replace(ipDest, newRoute);
-                System.out.println("New best route discovered!");
-            }
-            if (this.knownRoutes.get(ipDest).getDistance() == dist) {
-                this.knownRoutes.get(ipDest).addNextHop(ipToSend);
-                System.out.println("New equal route discovered!");
-            }
-        } else {
-            RoutingTableEntry newRoute = new RoutingTableEntry();
-            newRoute.setDistance(dist);
-            newRoute.setIpDestination(ipDest);
-            newRoute.addNextHop(ipDest);
-            this.knownRoutes.put(ipDest, newRoute);
-            System.out.println("New route discovered!");
-        }
+        RoutingTableEntry newRoute = new RoutingTableEntry();
+        newRoute.setDistance(dist);
+        newRoute.setIpDestination(ipDest);
+        newRoute.setNextHop(ipDest);
+        newRoute.setAddTime(System.currentTimeMillis());
+        this.knownRoutes.add(newRoute);
+        System.out.println("New route discovered!");
     }
-
 }

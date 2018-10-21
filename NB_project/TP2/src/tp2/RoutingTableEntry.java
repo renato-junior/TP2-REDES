@@ -1,20 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package tp2;
-import java.util.ArrayList;
+
 /**
  *
  * @author renatojuniortmp
  */
 public class RoutingTableEntry {
-    
+
     private String ipDestination;
     private int distance;
-    final private ArrayList<String> nextHop = new ArrayList<String>();
-    
+    private String nextHop;
+    private long addTime;
+
     public String getIpDestination() {
         return ipDestination;
     }
@@ -31,12 +28,20 @@ public class RoutingTableEntry {
         this.distance = distance;
     }
 
-    public ArrayList<String> getNextHop() {
+    public String getNextHop() {
         return nextHop;
     }
 
-    public void addNextHop(String nextHop) {
-        this.nextHop.add(nextHop);
+    public void setNextHop(String nextHop) {
+        this.nextHop = nextHop;
     }
-    
+
+    public long getAddTime() {
+        return addTime;
+    }
+
+    public void setAddTime(long addTime) {
+        this.addTime = addTime;
+    }
+
 }
