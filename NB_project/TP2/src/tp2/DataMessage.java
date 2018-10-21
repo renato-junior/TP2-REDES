@@ -8,7 +8,7 @@ import org.json.JSONObject;
  *
  * @author renatojuniortmp
  */
-public class DataMessage {
+public class DataMessage implements Message {
 
     private final String source;
     private final String destination;
@@ -22,6 +22,7 @@ public class DataMessage {
         this.payload = p;
     }
 
+    @Override
     public String getMessageJson() {
         JSONObject json = new JSONObject();
         json.put("type", DATA_MESSAGE_TYPE);
@@ -30,4 +31,5 @@ public class DataMessage {
         json.put("payload", this.payload);
         return json.toString();
     }
+
 }

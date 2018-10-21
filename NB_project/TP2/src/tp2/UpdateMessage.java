@@ -9,7 +9,7 @@ import org.json.JSONObject;
  *
  * @author renatojuniortmp
  */
-public class UpdateMessage {
+public class UpdateMessage implements Message {
 
     private final String source;
     private final String destination;
@@ -27,6 +27,7 @@ public class UpdateMessage {
         this.distances.put(ip, distance);
     }
 
+    @Override
     public String getMessageJson() {
         JSONObject json = new JSONObject();
         json.put("type", UPDATE_MESSAGE_TYPE);
@@ -35,4 +36,5 @@ public class UpdateMessage {
         json.put("distances", distances);
         return json.toString();
     }
+
 }

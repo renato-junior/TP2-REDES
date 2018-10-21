@@ -9,8 +9,6 @@ import java.net.UnknownHostException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -22,7 +20,7 @@ public class RouterRIP {
     private String ip;              // IP do roteador
     private int period;             // Período de atualização
 
-    private static final int PORTA_ROTEADOR = 55151;
+    public static final int ROUTER_PORT = 55151;
 
     private List<RoutingTableEntry> knownRoutes;
 
@@ -30,7 +28,7 @@ public class RouterRIP {
         this.ip = ip;
         this.period = period;
         try {
-            this.socket = new DatagramSocket(PORTA_ROTEADOR, InetAddress.getByName(ip));
+            this.socket = new DatagramSocket(ROUTER_PORT, InetAddress.getByName(ip));
         } catch (UnknownHostException | SocketException ex) {
             System.out.println("Erro ao criar o socket! " + ex.getLocalizedMessage());
             System.exit(0);
@@ -38,11 +36,11 @@ public class RouterRIP {
         this.knownRoutes = new ArrayList<>();
     }
 
-    void sendDataMessage(DataMessage m, String ipToSend, String port) {
+    void sendMessage(Message m, String ipToSend) {
         try {
             DatagramPacket p = new DatagramPacket(m.getMessageJson().getBytes(), m.getMessageJson().getBytes().length);
             p.setAddress(InetAddress.getByName(ipToSend));
-            p.setPort(Integer.parseInt(port));
+            p.setPort(ROUTER_PORT);
             socket.send(p);
 
         } catch (IOException ex ) {
@@ -66,5 +64,21 @@ public class RouterRIP {
         newRoute.setAddTime(System.currentTimeMillis());
         this.knownRoutes.add(newRoute);
         System.out.println("New route discovered!");
+    }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public int getPeriod() {
+        return period;
+    }
+
+    public List<RoutingTableEntry> getKnownRoutes() {
+        return knownRoutes;
     }
 }

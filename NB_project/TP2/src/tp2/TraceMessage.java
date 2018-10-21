@@ -10,7 +10,7 @@ import org.json.JSONObject;
  *
  * @author renatojuniortmp
  */
-public class TraceMessage {
+public class TraceMessage implements Message {
 
     private final String source;
     private final String destination;
@@ -28,6 +28,7 @@ public class TraceMessage {
         this.hops.add(ip);
     }
 
+    @Override
     public String getMessageJson() {
         JSONObject json = new JSONObject();
         json.put("type", TRACE_MESSAGE_TYPE);
