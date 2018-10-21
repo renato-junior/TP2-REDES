@@ -9,7 +9,8 @@ import java.net.UnknownHostException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.json.JSONObject;
+import java.util.HashMap;
 /**
  *
  * @author renatojuniortmp
@@ -36,7 +37,65 @@ public class RouterRIP {
         this.knownRoutes = new ArrayList<>();
     }
 
-    void sendMessage(Message m, String ipToSend) {
+    public void receiveMessage(){
+        byte[] buf = new byte[1024];
+        DatagramPacket p = new DatagramPacket(buf,buf.length);
+        try{            
+            socket.receive(p);
+            JSONObject messageJson = new JSONObject(new String(p.getData()));
+            if(messageJson.getString("type").equals("data")){
+                if(messageJson.getString("destination").equals(this.ip)){
+                    System.out.println(messageJson.getString("payload"));
+                }
+                else{
+                    DataMessage m = new DataMessage(messageJson.getString("source"),messageJson.getString("destination"),messageJson.getString("payload"));
+                    for(RoutingTableEntry i:this.knownRoutes){
+                        if(i.getIpDestination().equals(messageJson.getString("destination"))){
+                            sendMessage(m,i.getNextHop());
+                            break;
+                        }
+                    }
+                }
+            }
+            else if(messageJson.getString("type").equals("update")){
+                if(messageJson.getString("destination").equals(this.ip)){
+                    messageJson.getJSONObject("distances");
+                    HashMap<String, Integer> dists = messageJson.get("distances");
+                    for(RoutingTableEntry i:this.knownRoutes){
+                       if(dists.containsKey(i.getIpDestination())){
+                           if(dists.get(i.getIpDestination()) < i.getDistance()){
+                               i.setDistance(dists.get(i.getIpDestination()));
+                               i.setNextHop(messageJson.getString("source"));
+                           }
+                       }
+                    }
+                }
+            }
+            else if(messageJson.getString("type").equals("trace")){
+                if(messageJson.getString("destination").equals(this.ip)){
+                    DataMessage mData = new DataMessage(this.ip,messageJson.getString("source"),messageJson.getString("payload"));
+                    for(RoutingTableEntry i:this.knownRoutes){
+                        if(i.getIpDestination().equals(messageJson.getString("source"))){
+                            sendMessage(mData,i.getNextHop());
+                            break;
+                        }
+                    }                    
+                }
+                else{
+                    TraceMessage mTrace = new TraceMessage(messageJson.getString("source"),messageJson.getString("destination"));
+                    for(int i = 0; i < messageJson.getJSONArray("hops").length(); i++){
+                        mTrace.addHop(messageJson.getJSONArray("hops").getString(i));
+                    }
+                    mTrace.addHop(this.ip);
+                }
+            }
+            
+        }catch(Exception e0){
+            System.out.println("Error: " + e0.getMessage());
+        }
+    }
+    
+    public void sendMessage(Message m, String ipToSend) {
         try {
             DatagramPacket p = new DatagramPacket(m.getMessageJson().getBytes(), m.getMessageJson().getBytes().length);
             p.setAddress(InetAddress.getByName(ipToSend));
