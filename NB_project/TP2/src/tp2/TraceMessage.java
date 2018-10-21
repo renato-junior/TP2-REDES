@@ -24,6 +24,12 @@ public class TraceMessage implements Message {
         this.hops = new ArrayList<>();
     }
 
+    public TraceMessage(JSONObject jason){
+        this.source = jason.getString("source");
+        this.destination = jason.getString("destination");
+        this.hops = new ArrayList<>();
+    }
+    
     public void addHop(String ip) {
         this.hops.add(ip);
     }

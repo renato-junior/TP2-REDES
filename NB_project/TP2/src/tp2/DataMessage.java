@@ -21,6 +21,12 @@ public class DataMessage implements Message {
         this.destination = d;
         this.payload = p;
     }
+    
+    public DataMessage(JSONObject jason){
+        this.source = jason.getString("source");
+        this.destination = jason.getString("destination");
+        this.payload = jason.getString("payload");
+    }
 
     @Override
     public String getMessageJson() {

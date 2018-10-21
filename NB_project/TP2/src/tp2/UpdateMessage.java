@@ -22,6 +22,12 @@ public class UpdateMessage implements Message {
         this.destination = d;
         this.distances = new HashMap<>();
     }
+    
+    public UpdateMessage(JSONObject jason){
+        this.source = jason.getString("source");
+        this.destination = jason.getString("destination");
+        this.distances = new HashMap<>();
+    }
 
     public void addDistance(String ip, int distance) {
         this.distances.put(ip, distance);
