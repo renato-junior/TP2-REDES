@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
 import java.util.HashMap;
+import java.util.Map;
 /**
  *
  * @author renatojuniortmp
@@ -60,7 +61,11 @@ public class RouterRIP {
             else if(messageJson.getString("type").equals("update")){
                 if(messageJson.getString("destination").equals(this.ip)){
                     messageJson.getJSONObject("distances");
-                    HashMap<String, Integer> dists = messageJson.get("distances");
+                    Map<String,Object> mMap = messageJson.getJSONObject("distances").toMap();
+                    HashMap<String,Integer> dists =  new HashMap<String,Integer>();
+                    for(String key:mMap.keySet()){
+                        dists.put(key,(Integer) mMap.get(key));
+                    }
                     for(RoutingTableEntry i:this.knownRoutes){
                        if(dists.containsKey(i.getIpDestination())){
                            if(dists.get(i.getIpDestination()) < i.getDistance()){
