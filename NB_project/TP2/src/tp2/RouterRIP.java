@@ -46,6 +46,8 @@ public class RouterRIP {
             JSONObject messageJson = new JSONObject(new String(p.getData()));
             if(messageJson.getString("type").equals("data")){
                 if(messageJson.getString("destination").equals(this.ip)){
+                    System.out.println("Message received by: " + this.ip);
+                    System.out.println("Sent by: " + messageJson.getString("source"));
                     System.out.println(messageJson.getString("payload"));
                 }
                 else{
@@ -104,6 +106,22 @@ public class RouterRIP {
             
         }catch(Exception e0){
             System.out.println("Error: " + e0.getMessage());
+        }
+    }
+    
+    public void sendUpdateMessages(){
+        ArrayList<String> neibSent = new ArrayList<String>();
+        for(RoutingTableEntry i: this.knownRoutes){
+            if(!neibSent.contains(i.getNextHop())){
+                UpdateMessage updateMessage = new UpdateMessage(this.ip,i.getNextHop());
+                for(RoutingTableEntry j: this.knownRoutes){
+                    if(!i.getNextHop().equals(j.getIpDestination())){
+                        updateMessage.addDistance(j.getIpDestination(),j.getDistance());
+                    }
+                }
+                sendMessage(updateMessage,i.getNextHop());
+                neibSent.add(i.getNextHop());
+            }
         }
     }
     
