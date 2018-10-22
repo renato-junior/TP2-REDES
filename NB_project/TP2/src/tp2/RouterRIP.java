@@ -66,13 +66,20 @@ public class RouterRIP {
                     for(String key:mMap.keySet()){
                         dists.put(key,(Integer) mMap.get(key));
                     }
-                    for(RoutingTableEntry i:this.knownRoutes){
-                       if(dists.containsKey(i.getIpDestination())){
-                           if(dists.get(i.getIpDestination()) < i.getDistance()){
-                               i.setDistance(dists.get(i.getIpDestination()));
-                               i.setNextHop(messageJson.getString("source"));
-                           }
-                       }
+                    for(String key:dists.keySet()){
+                        if(this.knownRoutes.contains(key)){
+                            for(RoutingTableEntry i:this.knownRoutes){
+                                if(i.getIpDestination().equals(key) && 
+                                   i.getDistance() > dists.get(key)){
+                                    i.setNextHop(messageJson.getString("source"));
+                                    i.setDistance(dists.get(key));
+                                }
+                            }
+                        }
+                        else{
+                            addNewRoute(key,messageJson.getString("source"),dists.get(key));
+                        }
+                        
                     }
                 }
             }
