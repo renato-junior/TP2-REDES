@@ -125,6 +125,26 @@ public class RouterRIP {
         }
     }
     
+    public void sendTraceMessage(String ipDest){
+        TraceMessage tMessage = new TraceMessage(this.ip,ipDest);
+        tMessage.addHop(this.ip);
+        for(RoutingTableEntry i:this.knownRoutes){
+            if(i.getIpDestination().equals(ipDest)){
+                sendMessage(tMessage,i.getNextHop());
+                break;
+            }
+        }
+    }
+    
+    public void sendDataMessage(String ipDest,String payload){
+        DataMessage dMessage = new DataMessage(this.ip,ipDest,payload);
+        for(RoutingTableEntry i:this.knownRoutes){
+            if(i.getIpDestination().equals(ipDest)){
+                sendMessage(dMessage,i.getNextHop());
+            }
+        }
+    }
+    
     public void sendMessage(Message m, String ipToSend) {
         try {
             DatagramPacket p = new DatagramPacket(m.getMessageJson().getBytes(), m.getMessageJson().getBytes().length);
@@ -153,6 +173,14 @@ public class RouterRIP {
         newRoute.setAddTime(System.currentTimeMillis());
         this.knownRoutes.add(newRoute);
         System.out.println("New route discovered!");
+    }
+    
+    void deleteRoute(String ipDest){
+        for(RoutingTableEntry i:this.knownRoutes){
+            if(i.getNextHop().equals(ipDest)){
+                this.knownRoutes.remove(i);
+            }
+        }
     }
 
     public DatagramSocket getSocket() {
