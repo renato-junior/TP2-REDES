@@ -27,11 +27,9 @@ public class Router{
             if(command.equals("add")){
                 secondArg = inputLine.split(" ")[2];
                 mainRouter.addNewRoute(firstArg, firstArg, Integer.parseInt(secondArg));
-                mainRouter.sendUpdateMessages();
             }
             else if(command.equals("del")){
                 mainRouter.deleteRoute(firstArg);
-                mainRouter.sendUpdateMessages();
             }
             else if(command.equals("send")){
                 secondArg = inputLine.split(" ")[2];
@@ -39,6 +37,9 @@ public class Router{
             }
             else if(command.equals("trace")){
                 mainRouter.sendTraceMessage(firstArg);
+            }
+            else if(command.equals("print")){
+                mainRouter.printTable();
             }
         }
     }
