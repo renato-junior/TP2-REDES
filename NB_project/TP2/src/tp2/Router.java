@@ -5,59 +5,36 @@ import java.util.Scanner;
 public class Router{
         
     public static void main(String[] args) {
+        RouterRIP mainRouter = new RouterRIP(args[0],Integer.parseInt(args[1]));
+        Timmer timmer = new Timmer();
+        
+        timmer.start();
+        mainRouter.start();
         while(true){
-            RouterRIP mainRouter = new RouterRIP(args[0],Integer.parseInt(args[1]));
-            InputDataReader input = new InputDataReader();
-            Timmer timmer = new Timmer();
-            input.start();
-            timmer.start();
-            if(input.command.equals("quit"))
-                break;
-            else if(input.command.equals("add")){
-                mainRouter.addNewRoute(input.firstArg,input.firstArg,Integer.parseInt(input.secondArg));
-            }else if(input.command.equals("del")){
-                mainRouter.deleteRoute(input.firstArg);
-            }else if(input.command.equals("trace")){
-                mainRouter.sendTraceMessage(input.firstArg);
-            }            
-            
-            if(timmer.timePassed >= mainRouter.getPeriod()){
+            if(timmer.timePassed >= 4*mainRouter.getPeriod()){
                 mainRouter.sendUpdateMessages();
                 timmer.reset();
             }
-        }
-    }
-}
-
-
-class InputDataReader extends Thread{
-    String command;
-    String firstArg;
-    String secondArg;
-    int k;
-        
-    public InputDataReader(){
-        this.command = "default-value";
-        this.firstArg = "default-value";
-        this.secondArg = "default-value";
-        this.k = 0;
-    }
-    
-    @Override
-    public void run(){
-        while(true){
-            Scanner input = new Scanner(System.in);
-            String inputLine = input.nextLine();
-            command = inputLine.split(" ")[0];
-            if(command.equals("stop")){
-                break;
-            }
-            firstArg = inputLine.split(" ")[1];
+            Scanner inpt = new Scanner(System.in);
+            String inputLine = inpt.nextLine();            
+            String command = inputLine.split(" ")[0];
+            String firstArg = inputLine.split(" ")[1];
+            String secondArg;
             if(command.equals("add")){
                 secondArg = inputLine.split(" ")[2];
+                mainRouter.addNewRoute(firstArg, firstArg, Integer.parseInt(secondArg));
             }
-            k++;
-            System.out.println(k);
+            else if(command.equals("del")){
+                mainRouter.deleteRoute(firstArg);
+                mainRouter.sendUpdateMessages();
+            }
+            else if(command.equals("send")){
+                secondArg = inputLine.split(" ")[2];
+                mainRouter.sendDataMessage(firstArg, secondArg);
+            }
+            else if(command.equals("trace")){
+                mainRouter.sendTraceMessage(firstArg);
+            }
         }
     }
 }
