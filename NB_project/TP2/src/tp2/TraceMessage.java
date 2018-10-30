@@ -24,9 +24,9 @@ public class TraceMessage implements Message {
         this.hops = new ArrayList<>();
     }
 
-    public TraceMessage(JSONObject jason){
-        this.source = jason.getString("source");
-        this.destination = jason.getString("destination");
+    public TraceMessage(JSONObject json){
+        this.source = json.getString("source");
+        this.destination = json.getString("destination");
         this.hops = new ArrayList<>();
     }
     

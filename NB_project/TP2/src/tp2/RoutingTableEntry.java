@@ -1,5 +1,6 @@
-
 package tp2;
+
+import java.util.Objects;
 
 /**
  *
@@ -42,6 +43,30 @@ public class RoutingTableEntry {
 
     public void setAddTime(long addTime) {
         this.addTime = addTime;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RoutingTableEntry other = (RoutingTableEntry) obj;
+        if (this.distance != other.distance) {
+            return false;
+        }
+        if (!Objects.equals(this.ipDestination, other.ipDestination)) {
+            return false;
+        }
+        if (!Objects.equals(this.nextHop, other.nextHop)) {
+            return false;
+        }
+        return true;
     }
 
 }

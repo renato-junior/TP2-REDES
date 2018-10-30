@@ -23,9 +23,9 @@ public class UpdateMessage implements Message {
         this.distances = new HashMap<>();
     }
     
-    public UpdateMessage(JSONObject jason){
-        this.source = jason.getString("source");
-        this.destination = jason.getString("destination");
+    public UpdateMessage(JSONObject json){
+        this.source = json.getString("source");
+        this.destination = json.getString("destination");
         this.distances = new HashMap<>();
     }
 

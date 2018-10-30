@@ -22,10 +22,10 @@ public class DataMessage implements Message {
         this.payload = p;
     }
     
-    public DataMessage(JSONObject jason){
-        this.source = jason.getString("source");
-        this.destination = jason.getString("destination");
-        this.payload = jason.getString("payload");
+    public DataMessage(JSONObject json){
+        this.source = json.getString("source");
+        this.destination = json.getString("destination");
+        this.payload = json.getString("payload");
     }
 
     @Override

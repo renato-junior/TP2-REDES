@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author renato
  */
-public class UpdateRoutesThread implements Runnable {
+public class UpdateRoutesThread extends Thread {
 
     private RouterRIP router;
     private long updatePeriod;
@@ -19,13 +19,21 @@ public class UpdateRoutesThread implements Runnable {
 
     @Override
     public void run() {
-        // TODO
+        long startTimeUpdate = System.currentTimeMillis();
+        while(true) {
+            long currentTime = System.currentTimeMillis();
+            if(currentTime - startTimeUpdate >= updatePeriod) {
+                this.sendUpdateToNeighbours();
+                startTimeUpdate = currentTime;
+            }
+//            this.removeOldRoutes();
+        }
     }
 
     /**
      * Remove as rotas que foram inseridas há mais que updatePeriod.
      */
-    private void removeOldRoutes() {
+    private synchronized void removeOldRoutes() {
         long currentTime = System.currentTimeMillis();
         long removePeriod = updatePeriod * 4;
         List<RoutingTableEntry> routes = router.getKnownRoutes();
@@ -42,7 +50,7 @@ public class UpdateRoutesThread implements Runnable {
      * Envia a mensagem de atualização com todas as rotas conhecidas para os
      * vizinhos.
      */
-    private void sendUpdateToNeighbours() {
+    private synchronized void sendUpdateToNeighbours() {
         for (RoutingTableEntry r : router.getKnownRoutes()) {
             if (verifyNeighbour(r)) {
                 sendUpdateToNeighbour(r.getIpDestination());
@@ -57,7 +65,7 @@ public class UpdateRoutesThread implements Runnable {
      * @param neighbourIp o vizinho para o qual será enviada a mensagem de
      * atualização.
      */
-    private void sendUpdateToNeighbour(String neighbourIp) {
+    private synchronized void sendUpdateToNeighbour(String neighbourIp) {
         UpdateMessage updateMessage = new UpdateMessage(router.getIp(), neighbourIp);
         for (RoutingTableEntry r : router.getKnownRoutes()) {
             if (!r.getNextHop().equals(neighbourIp) && !r.getIpDestination().equals(neighbourIp)) {
@@ -74,7 +82,7 @@ public class UpdateRoutesThread implements Runnable {
      * @param r o possível vizinho.
      * @return true, se for vizinho, e falso, se não for.
      */
-    private boolean verifyNeighbour(RoutingTableEntry r) {
+    private synchronized boolean verifyNeighbour(RoutingTableEntry r) {
         return r.getIpDestination().equals(r.getNextHop());
     }
 
