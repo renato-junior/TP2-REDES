@@ -57,7 +57,7 @@ public class RouterRIP extends Thread {
         }
     }
 
-    public void receiveMessage(DatagramPacket p) {
+    public synchronized void receiveMessage(DatagramPacket p) {
 
         JSONObject messageJson = new JSONObject(new String(p.getData()));
         switch (messageJson.getString("type")) {

@@ -20,13 +20,16 @@ public class UpdateRoutesThread extends Thread {
     @Override
     public void run() {
         long startTimeUpdate = System.currentTimeMillis();
-        while(true) {
-            long currentTime = System.currentTimeMillis();
-            if(currentTime - startTimeUpdate >= updatePeriod) {
-                this.sendUpdateToNeighbours();
-                startTimeUpdate = currentTime;
+        while (true) {
+            try {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - startTimeUpdate >= updatePeriod) {
+                    this.sendUpdateToNeighbours();
+                    startTimeUpdate = currentTime;
+                }
+                this.removeOldRoutes();
+            } catch (NullPointerException e) {
             }
-            this.removeOldRoutes();
         }
     }
 
