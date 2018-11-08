@@ -39,7 +39,7 @@ public class UpdateRoutesThread extends Thread {
         List<RoutingTableEntry> routes = router.getKnownRoutes();
         List<RoutingTableEntry> expiredRoutes = new ArrayList<>();
         for (RoutingTableEntry r : routes) {
-            if (currentTime - r.getAddTime() > removePeriod) {
+            if (!verifyNeighbour(r) && currentTime - r.getAddTime() > removePeriod) {
                 expiredRoutes.add(r);
             }
         }
