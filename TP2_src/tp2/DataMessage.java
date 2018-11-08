@@ -1,6 +1,6 @@
 package tp2;
 
-import org.json.JSONObject;
+import json.JSONObject;
 
 /**
  * Classe que representa uma mensagem de dados. Esse tipo de mensagem é descrito

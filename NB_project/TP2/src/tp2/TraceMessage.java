@@ -2,7 +2,7 @@ package tp2;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONObject;
+import json.JSONObject;
 
 /**
  * Classe que representa uma mensagem de trace. Esse tipo de mensagem é descrito

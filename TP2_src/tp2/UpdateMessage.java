@@ -1,7 +1,7 @@
 package tp2;
 
 import java.util.HashMap;
-import org.json.JSONObject;
+import json.JSONObject;
 
 /**
  * Classe que representa uma mensagem de atualização. Esse tipo de mensagem é

@@ -1,6 +1,6 @@
 all:
 	javac */*.java
-	jar cfe router.jar Router.main */*.class
+	jar cfe router.jar tp2.Router */*.class
 
 clean:
 	rm -rf */*.class
