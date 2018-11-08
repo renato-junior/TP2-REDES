@@ -1,16 +1,36 @@
 package tp2;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Router {
-
+    
     public static void main(String[] args) {
         RouterRIP mainRouter = new RouterRIP(args[0], Integer.parseInt(args[1]));
         InputHandler input = new InputHandler();
 
+        // Verifica arquivo de STARTUP
+        if (args.length == 3) {
+            try {
+                String fileName = args[2];
+                File file = new File(fileName);
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                
+                String st;
+                while ((st = br.readLine()) != null) {
+                    input.addCommand(st);
+                }
+            } catch (IOException e) {
+                System.out.println("Ocorreu um erro ao processar o arquivo de STARTUP.");
+                System.exit(0);
+            }
+            
+        }
+        
         mainRouter.start();
         input.start();
         while (true) {
@@ -51,20 +71,20 @@ public class Router {
 }
 
 class InputHandler extends Thread {
-
+    
     ArrayList<String> inputs;
-
+    
     InputHandler() {
         inputs = new ArrayList<String>();
     }
-
+    
     public void run() {
         while (true) {
             Scanner inpt = new Scanner(System.in);
             inputs.add(inpt.nextLine());
         }
     }
-
+    
     public String getNextCommand() {
         if (this.inputs.isEmpty()) {
             return null;
@@ -72,5 +92,9 @@ class InputHandler extends Thread {
             return this.inputs.remove(0);
         }
     }
-
+    
+    public void addCommand(String command) {
+        this.inputs.add(command);
+    }
+    
 }

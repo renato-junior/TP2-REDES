@@ -26,7 +26,7 @@ public class UpdateRoutesThread extends Thread {
                 this.sendUpdateToNeighbours();
                 startTimeUpdate = currentTime;
             }
-//            this.removeOldRoutes();
+            this.removeOldRoutes();
         }
     }
 
