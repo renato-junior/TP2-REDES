@@ -151,18 +151,18 @@ public class RouterRIP extends Thread {
      * @param ipToSend o ip do next hop.
      * @param dist o peso do enlace;
      */
-    public void addNewRoute(String ipDest, String ipToSend, int dist) {
+    public synchronized void addNewRoute(String ipDest, String ipToSend, int dist) {
         RoutingTableEntry newRoute = new RoutingTableEntry();
         newRoute.setDistance(dist);
         newRoute.setIpDestination(ipDest);
         newRoute.setNextHop(ipToSend);
         newRoute.setAddTime(System.currentTimeMillis());
-        if(!this.knownRoutes.contains(newRoute)) {
+        if (!this.knownRoutes.contains(newRoute)) {
             this.knownRoutes.add(newRoute);
         }
     }
 
-    public void deleteRoute(String ipDest) {
+    public synchronized void deleteRoute(String ipDest) {
         for (RoutingTableEntry i : this.knownRoutes) {
             if (i.getNextHop().equals(ipDest)) {
                 this.knownRoutes.remove(i);
@@ -181,7 +181,7 @@ public class RouterRIP extends Thread {
         }
     }
 
-    public void printTable() {
+    public synchronized void printTable() {
         System.out.println("===============================");
         for (RoutingTableEntry i : this.knownRoutes) {
             System.out.println("IpDest:" + i.getIpDestination());
@@ -215,7 +215,7 @@ public class RouterRIP extends Thread {
                 bestRoutes.add(r);
             }
         }
-        if(bestRoutes.isEmpty()) {
+        if (bestRoutes.isEmpty()) {
             return null;
         }
         return bestRoutes.get(new Random().nextInt(bestRoutes.size()));
