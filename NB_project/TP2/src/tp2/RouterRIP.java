@@ -11,6 +11,7 @@ import java.util.List;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  *
@@ -197,17 +198,27 @@ public class RouterRIP extends Thread {
      * @return a rota mais curta.
      */
     private synchronized RoutingTableEntry getBestRouteToDestination(String ipDest) {
-        RoutingTableEntry bestRoute = null;
+        ArrayList<RoutingTableEntry> bestRoutes = new ArrayList<>();
+        int bestDistance = -1;
+        // Pega a menor distância
         for (RoutingTableEntry r : this.knownRoutes) {
             if (r.getIpDestination().equals(ipDest)) {
-                if (bestRoute == null) {
-                    bestRoute = r;
-                } else if (r.getDistance() < bestRoute.getDistance()) {
-                    bestRoute = r;
+                if (bestDistance == -1) {
+                    bestDistance = r.getDistance();
+                } else if (r.getDistance() < bestDistance) {
+                    bestDistance = r.getDistance();
                 }
             }
         }
-        return bestRoute;
+        for (RoutingTableEntry r : this.knownRoutes) {
+            if (r.getIpDestination().equals(ipDest) && r.getDistance() == bestDistance) {
+                bestRoutes.add(r);
+            }
+        }
+        if(bestRoutes.isEmpty()) {
+            return null;
+        }
+        return bestRoutes.get(new Random().nextInt(bestRoutes.size()));
     }
 
     public DatagramSocket getSocket() {
