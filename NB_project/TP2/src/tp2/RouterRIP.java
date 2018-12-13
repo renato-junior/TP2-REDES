@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import json.JSONObject;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class RouterRIP extends Thread {
 
     public static final int ROUTER_PORT = 55151;
 
-    private List<RoutingTableEntry> knownRoutes;
+    private final List<RoutingTableEntry> knownRoutes;
     private UpdateRoutesThread updateRoutesThread;
 
     public RouterRIP(String ip, int period) {
@@ -37,7 +38,7 @@ public class RouterRIP extends Thread {
             System.out.println("Erro ao criar o socket! " + ex.getLocalizedMessage());
             System.exit(0);
         }
-        this.knownRoutes = new ArrayList<>();
+        this.knownRoutes = Collections.synchronizedList(new ArrayList<>());
 
         this.updateRoutesThread = new UpdateRoutesThread(this);
         this.updateRoutesThread.start();
@@ -162,11 +163,15 @@ public class RouterRIP extends Thread {
         }
     }
 
-    public synchronized void deleteRoute(String ipDest) {
-        for (RoutingTableEntry i : this.knownRoutes) {
-            if (i.getNextHop().equals(ipDest)) {
-                this.knownRoutes.remove(i);
+    public void deleteRoute(String ipDest) {
+        synchronized(this.knownRoutes) {
+            List<RoutingTableEntry> aux = new ArrayList<>();
+            for (RoutingTableEntry i : this.knownRoutes) {
+                if (i.getNextHop().equals(ipDest)) {
+                    aux.add(i);
+                }
             }
+            this.knownRoutes.removeAll(aux);
         }
     }
 

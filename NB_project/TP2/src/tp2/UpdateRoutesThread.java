@@ -1,6 +1,7 @@
 package tp2;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class UpdateRoutesThread extends Thread {
                     startTimeUpdate = currentTime;
                 }
                 this.removeOldRoutes();
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | ConcurrentModificationException e) {
             }
         }
     }
