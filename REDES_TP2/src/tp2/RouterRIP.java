@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import json.JSONObject;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class RouterRIP extends Thread {
 
     public static final int ROUTER_PORT = 55151;
 
-    private List<RoutingTableEntry> knownRoutes;
+    private final List<RoutingTableEntry> knownRoutes;
     private UpdateRoutesThread updateRoutesThread;
 
     public RouterRIP(String ip, int period) {
@@ -37,7 +38,7 @@ public class RouterRIP extends Thread {
             System.out.println("Erro ao criar o socket! " + ex.getLocalizedMessage());
             System.exit(0);
         }
-        this.knownRoutes = new ArrayList<>();
+        this.knownRoutes = Collections.synchronizedList(new ArrayList<>());
 
         this.updateRoutesThread = new UpdateRoutesThread(this);
         this.updateRoutesThread.start();
@@ -162,11 +163,15 @@ public class RouterRIP extends Thread {
         }
     }
 
-    public synchronized void deleteRoute(String ipDest) {
-        for (RoutingTableEntry i : this.knownRoutes) {
-            if (i.getNextHop().equals(ipDest)) {
-                this.knownRoutes.remove(i);
+    public void deleteRoute(String ipDest) {
+        synchronized(this.knownRoutes) {
+            List<RoutingTableEntry> aux = new ArrayList<>();
+            for (RoutingTableEntry i : this.knownRoutes) {
+                if (i.getNextHop().equals(ipDest)) {
+                    aux.add(i);
+                }
             }
+            this.knownRoutes.removeAll(aux);
         }
     }
 
@@ -202,7 +207,7 @@ public class RouterRIP extends Thread {
         int bestDistance = -1;
         // Pega a menor distância
         for (RoutingTableEntry r : this.knownRoutes) {
-            if (r.getIpDestination().equals(ipDest)) {
+            if (r.getIpDestination().equals(ipDest) && checkIfNeighbour(r.getNextHop())) {
                 if (bestDistance == -1) {
                     bestDistance = r.getDistance();
                 } else if (r.getDistance() < bestDistance) {
@@ -219,6 +224,15 @@ public class RouterRIP extends Thread {
             return null;
         }
         return bestRoutes.get(new Random().nextInt(bestRoutes.size()));
+    }
+    
+    private boolean checkIfNeighbour(String ip) {
+        for(RoutingTableEntry r : this.knownRoutes) {
+            if(r.getNextHop().equals(ip) && r.getIpDestination().equals(ip)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public DatagramSocket getSocket() {
